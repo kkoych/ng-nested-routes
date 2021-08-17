@@ -11,7 +11,7 @@ export class ThirdComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      console.log('third', params);
+      // console.log('third', params);
     });
   }
 }

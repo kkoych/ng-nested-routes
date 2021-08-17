@@ -7,6 +7,7 @@ import { FirstComponent } from './first/first.component';
 import { SecondComponent } from './first/second/second.component';
 import { ThirdComponent } from './first/second/third/third.component';
 import { MasterComponent } from './master/master.component';
+import { ProgramComponent } from './program/program.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { MasterComponent } from './master/master.component';
     FirstComponent,
     SecondComponent,
     ThirdComponent,
-    MasterComponent
+    MasterComponent,
+    ProgramComponent
   ],
   imports: [
     BrowserModule,

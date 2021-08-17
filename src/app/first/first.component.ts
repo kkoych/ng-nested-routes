@@ -11,7 +11,7 @@ export class FirstComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      console.log('first', params);
+      // console.log('first', params);
     });
   }
 }

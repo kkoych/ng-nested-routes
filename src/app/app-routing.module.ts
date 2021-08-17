@@ -3,20 +3,26 @@ import { RouterModule, Routes } from '@angular/router';
 import { FirstComponent } from './first/first.component';
 import { SecondComponent } from './first/second/second.component';
 import { ThirdComponent } from './first/second/third/third.component';
+import { ProgramComponent } from './program/program.component';
 
 const routes: Routes = [
   {
-    path: 'first',
-    component: FirstComponent,
+    path: 'program',
+    component: ProgramComponent,
     children: [
       {
-        path: 'second',
-        component: SecondComponent,
+        path: 'first',
+        component: FirstComponent,
         children: [
           {
-            path: 'third',
-            component: ThirdComponent,
-            children: [{ path: 'test', component: ThirdComponent }],
+            path: 'second',
+            component: SecondComponent,
+            children: [
+              {
+                path: 'third',
+                component: ThirdComponent,
+              },
+            ],
           },
         ],
       },
