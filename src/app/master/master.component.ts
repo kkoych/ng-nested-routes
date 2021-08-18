@@ -37,8 +37,8 @@ export class MasterComponent implements OnInit {
     const params: any = {};
     params[this.page] = encodeURIComponent(
       JSON.stringify({
-        skip: ~~(Math.random() * 10),
-        take: ~~(Math.random() * 10),
+        skip: ~~(Math.random() * 100),
+        take: ~~(Math.random() * 100),
       })
     );
 
