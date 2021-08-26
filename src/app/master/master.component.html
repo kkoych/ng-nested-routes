@@ -2,7 +2,7 @@
   <a
     style="text-decoration: underline; color: #0000bb; cursor: pointer"
     (click)="onClick()"
-    >Go to {{ this.page.length > 0 ? this.page : "start" }}</a
+    >Go to {{ this.page ? this.page : "start" }}</a
   >
   <p *ngIf="this.paramString">Parameters: {{ this.paramString }}</p>
   <router-outlet></router-outlet>

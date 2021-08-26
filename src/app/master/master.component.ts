@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, Routes } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-master',
@@ -7,23 +7,37 @@ import { ActivatedRoute, Router, Routes } from '@angular/router';
   styleUrls: ['./master.component.scss'],
 })
 export class MasterComponent implements OnInit {
-  @Input() page: string = '';
+  @Input() page: string | undefined = undefined;
   parameters = {};
   paramString = '';
 
   constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
+    if (this.page === undefined) return;
+
     this.route.queryParams.subscribe((params) => {
-      if (params[this.page] === undefined) return;
-      const queryFromURI = decodeURIComponent(params[this.page]);
+      // Helper function for TypeScript
+      // vvv IMPROVEMENT vvv
+      function castToString(input: any): string {
+        return input as string;
+      }
+      // move to separate file
+      // ^^^ IMPROVEMENT ^^^
+
+      const castPageAsString = castToString(this.page);
+      if (params[castPageAsString] === undefined) return;
+      const queryFromURI = decodeURIComponent(params[castPageAsString]);
       this.parameters = JSON.parse(queryFromURI);
       this.paramString = queryFromURI;
     });
   }
 
-  onClick() {
-    if (this.page.length === 0) return this.router.navigate(['']);
+  onClick(): void {
+    if (this.page === undefined) {
+      this.router.navigate(['']);
+      return;
+    }
 
     let navUrl = this.router.url.split('?')[0];
     const pageIndexInUrl = navUrl.indexOf(this.page);
@@ -42,7 +56,7 @@ export class MasterComponent implements OnInit {
       })
     );
 
-    return this.router.navigate([navUrl], {
+    this.router.navigate([navUrl], {
       queryParams: params,
       queryParamsHandling: 'merge',
     });
