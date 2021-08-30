@@ -4,6 +4,8 @@
     (click)="onClick()"
     >Go to {{ this.page ? this.page : "start" }}</a
   >
-  <p *ngIf="this.paramString">Parameters: {{ this.paramString }}</p>
+  <p *ngIf="this.existingComponentParams">
+    Parameters: {{ this.existingComponentParams }}
+  </p>
   <router-outlet></router-outlet>
 </div>

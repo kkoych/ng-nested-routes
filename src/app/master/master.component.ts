@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
+import { RandomnessService } from '../randomness.service';
 
 @Component({
   selector: 'app-master',
@@ -8,28 +9,23 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class MasterComponent implements OnInit {
   @Input() page: string | undefined = undefined;
-  parameters = {};
-  paramString = '';
+  allQueryParamMap: ParamMap | null = null;
+  componentParameters: any = {};
+  existingComponentParams: string | null = null;
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private rs: RandomnessService
+  ) {}
 
   ngOnInit(): void {
     if (this.page === undefined) return;
+    const pageString = this.castToString(this.page);
 
-    this.route.queryParams.subscribe((params) => {
-      // Helper function for TypeScript
-      // vvv IMPROVEMENT vvv
-      function castToString(input: any): string {
-        return input as string;
-      }
-      // move to separate file
-      // ^^^ IMPROVEMENT ^^^
-
-      const castPageAsString = castToString(this.page);
-      if (params[castPageAsString] === undefined) return;
-      const queryFromURI = decodeURIComponent(params[castPageAsString]);
-      this.parameters = JSON.parse(queryFromURI);
-      this.paramString = queryFromURI;
+    this.route.queryParamMap.subscribe((paramMap) => {
+      this.allQueryParamMap = paramMap;
+      this.existingComponentParams = paramMap.get(pageString);
     });
   }
 
@@ -39,6 +35,8 @@ export class MasterComponent implements OnInit {
       return;
     }
 
+    // Build url for navigation
+    // vvv IMPROVEMENT vvv
     let navUrl = this.router.url.split('?')[0];
     const pageIndexInUrl = navUrl.indexOf(this.page);
     if (!navUrl.endsWith('/')) navUrl += '/';
@@ -47,18 +45,67 @@ export class MasterComponent implements OnInit {
     } else {
       navUrl = navUrl.slice(0, pageIndexInUrl + this.page.length);
     }
+    // move to separate method in component
+    // ^^^ IMPROVEMENT ^^^
 
-    const params: any = {};
-    params[this.page] = encodeURIComponent(
-      JSON.stringify({
-        skip: ~~(Math.random() * 100),
-        take: ~~(Math.random() * 100),
-      })
+    // Preserve and add new query parameters
+    // vvv IMPROVEMENT vvv
+    const urlSegmentsSet = new Set();
+    navUrl
+      .split('/')
+      .filter((segment) => segment.length > 0)
+      .forEach((segment) => {
+        urlSegmentsSet.add(segment);
+      });
+    const existingParamKeysSet = new Set();
+    if (this.allQueryParamMap?.keys.length === 0) {
+      existingParamKeysSet.add(this.page);
+    }
+    if (!existingParamKeysSet.has(this.page)) {
+      existingParamKeysSet.add(this.page);
+    }
+    this.allQueryParamMap?.keys.forEach((key) => {
+      existingParamKeysSet.add(key);
+    });
+    const paramKeysSet = new Set(
+      [...urlSegmentsSet].filter((segment) => existingParamKeysSet.has(segment))
     );
+    // vvv TODO vvv
+    // only add new params to current component (where key is this.page)
+    // preserve others
+    // if .get(key) returns null then add new params
+    // if it doesn't merge params
+    const queryParams: Params = {};
+    paramKeysSet.forEach((key) => {
+      const keyString = this.castToString(key);
+      const newParameters =
+        keyString === this.page ? this.rs.generateParameters() : {};
 
+      let oldParams = JSON.parse(
+        this.allQueryParamMap?.get(keyString) as string
+      );
+      if (this.allQueryParamMap?.get(keyString) === null) {
+        queryParams[keyString] = newParameters;
+      } else {
+        queryParams[keyString] = Object.assign(oldParams, newParameters);
+      }
+      queryParams[keyString] = JSON.stringify(queryParams[keyString]);
+    });
+    // merge and preserve parameters
+    // ^^^ TODO ^^^
+
+    // move to separate method in component
+    // ^^^ IMPROVEMENT ^^^
     this.router.navigate([navUrl], {
-      queryParams: params,
-      queryParamsHandling: 'merge',
+      queryParams: queryParams,
     });
   }
+
+  // Helper function for TypeScript casting
+  // vvv IMPROVEMENT vvv
+  castToString(input: any): string {
+    return input as string;
+  }
+  // move to separate file
+  // ^^^ IMPROVEMENT ^^^
 }
