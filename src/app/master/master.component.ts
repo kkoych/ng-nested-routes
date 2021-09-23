@@ -70,11 +70,6 @@ export class MasterComponent implements OnInit {
     const paramKeysSet = new Set(
       [...urlSegmentsSet].filter((segment) => existingParamKeysSet.has(segment))
     );
-    // vvv TODO vvv
-    // only add new params to current component (where key is this.page)
-    // preserve others
-    // if .get(key) returns null then add new params
-    // if it doesn't merge params
     const queryParams: Params = {};
     paramKeysSet.forEach((key) => {
       const keyString = this.castToString(key);
@@ -91,8 +86,6 @@ export class MasterComponent implements OnInit {
       }
       queryParams[keyString] = JSON.stringify(queryParams[keyString]);
     });
-    // merge and preserve parameters
-    // ^^^ TODO ^^^
 
     // move to separate method in component
     // ^^^ IMPROVEMENT ^^^
