@@ -2,7 +2,7 @@
   <a
     style="text-decoration: underline; color: #0000bb; cursor: pointer"
     (click)="onClick()"
-    >Go to {{ this.page ? this.page : "start" }}</a
+    >Go to {{ this.childPath }}</a
   >
   <p *ngIf="this.existingComponentParams">
     Parameters: {{ this.existingComponentParams }}

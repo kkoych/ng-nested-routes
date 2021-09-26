@@ -9,6 +9,7 @@ import { RandomnessService } from '../randomness.service';
 })
 export class MasterComponent implements OnInit {
   @Input() page: string | undefined = undefined;
+  @Input() childPath: string | undefined = undefined;
   allQueryParamMap: ParamMap | null = null;
   componentParameters: any = {};
   existingComponentParams: string | null = null;
@@ -30,7 +31,7 @@ export class MasterComponent implements OnInit {
   }
 
   onClick(): void {
-    if (this.page === undefined) {
+    if (this.childPath === undefined) {
       this.router.navigate(['']);
       return;
     }
@@ -38,15 +39,19 @@ export class MasterComponent implements OnInit {
     // Build url for navigation
     // vvv IMPROVEMENT vvv
     let navUrl = this.router.url.split('?')[0];
-    const pageIndexInUrl = navUrl.indexOf(this.page);
+    const pathIndexInUrl = navUrl.indexOf(this.childPath);
     if (!navUrl.endsWith('/')) navUrl += '/';
-    if (pageIndexInUrl === -1) {
-      navUrl += `${this.page}`;
+    if (pathIndexInUrl === -1) {
+      navUrl += `${this.childPath}`;
     } else {
-      navUrl = navUrl.slice(0, pageIndexInUrl + this.page.length);
+      navUrl = navUrl.slice(0, pathIndexInUrl + this.childPath.length);
     }
     // move to separate method in component
     // ^^^ IMPROVEMENT ^^^
+
+    // Fix parameter mismatch by one
+    // Error introduced after adding childPath
+    // vvv TODO vvv
 
     // Preserve and add new query parameters
     // vvv IMPROVEMENT vvv
@@ -86,9 +91,11 @@ export class MasterComponent implements OnInit {
       }
       queryParams[keyString] = JSON.stringify(queryParams[keyString]);
     });
-
     // move to separate method in component
     // ^^^ IMPROVEMENT ^^^
+    // Parameter mismatch first is second
+    // ^^^ TODO ^^^
+    
     this.router.navigate([navUrl], {
       queryParams: queryParams,
     });
